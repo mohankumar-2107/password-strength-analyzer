@@ -72,7 +72,8 @@
     font-weight: 600;
     color: #0a58ca;
     text-shadow: none;
-    animation: scrollText 18s linear infinite;
+    /* Changed 18s to 35s to slow down the animation */
+    animation: scrollText 32s linear infinite; 
   }
 
   @keyframes scrollText {
@@ -84,7 +85,7 @@
     position: relative;
     z-index: 1;
     width: 400px;
-    background:  #1c2b3e;
+    background: #111827;
     border-radius: 20px;
     padding: 28px 24px;
     box-shadow: 0 10px 35px rgba(0,0,0,0.15);
@@ -151,17 +152,16 @@
     border: 1px solid rgba(59, 130, 246, 0.4);
   }
 
-  /* --- Updated Suggestion Box to Grey --- */
   .suggestion-box {
     margin-top: 16px;
     min-height: 54px;
     padding: 14px;
     border-radius: 12px;
-    border: 1px solid #ced4da; /* A solid, light grey border */
-    background: #e9ecef; /* A light grey background */
+    border: 1px solid #ced4da;
+    background: #e9ecef;
     text-align: left;
     font-size: 13px;
-    color: var(--text-dark); /* Dark text for good contrast */
+    color: var(--text-dark);
   }
 
   .warning {
@@ -201,9 +201,9 @@
 <body>
 
   <header class="page-header">
-    <div class="title">Password Entropy Analyzer 🔒🗝</div>
+    <div class="title">Password Entropy Analyzer</div>
     <div class="moving-tagline">
-      <p>Hey Just start typing your passwords before saving in other sites without cautious and know it safe and give everywhere and don’t fear , The worlds most dangerous weapon also requires strong password so cautious should be there for privacy and for everybody to you friends and familes 😇✨</p>
+      <p>Hey, Just start typing your passwords before saving in other sites without cautious and know it safe and give everywhere and don’t fear , The worlds most dangerous weapon also requires strong password so cautious should be there for privacy and for everybody to your friends and familes 😇✨</p>
     </div>
   </header>
   
