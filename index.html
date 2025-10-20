@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Password Entropy Analyzer</title>
 <style>
-  /* --- Recommended Color Scheme --- */
+  /* --- Base & Card Styles (Unchanged) --- */
   :root {
     --w: 280px;
     --bar-h: 14px;
-    --primary-blue: #3b82f6; /* Modern, accessible blue */
-    --text-dark: #212529;      /* Dark charcoal for high contrast */
-    --text-light: #e5e7eb;     /* For text on dark backgrounds */
-    --background-light: #f8f9fa; /* Soft, off-white background */
+    --primary-blue: #3b82f6; 
   }
 
   body {
@@ -20,16 +17,17 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    background: var(--background-light);
-    color: var(--text-dark);
     margin: 0;
     overflow: hidden;
+    transition: background 1s ease, color 1s ease;
+    position: relative;
   }
   
   .page-header {
     padding-top: 5vh;
     width: 100%;
     flex-shrink: 0;
+    z-index: 2;
   }
   
   .page-main {
@@ -38,22 +36,24 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-  }
-
-  @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0px); }
+    z-index: 2;
   }
 
   .title {
     font-size: 36px;
     font-weight: 700;
-    color: var(--text-dark);
     text-shadow: none;
     text-align: center;
-    animation: float 6s infinite ease-in-out;
     margin: 0;
+    transition: color 1s ease;
+  }
+  
+  #dynamic-greeting {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    transition: color 1s ease;
   }
 
   .moving-tagline {
@@ -70,10 +70,9 @@
     white-space: nowrap;
     font-size: 17px;
     font-weight: 600;
-    color: #0a58ca;
     text-shadow: none;
-    /* Changed 18s to 35s to slow down the animation */
-    animation: scrollText 32s linear infinite; 
+    animation: scrollText 35s linear infinite;
+    transition: color 1s ease;
   }
 
   @keyframes scrollText {
@@ -92,7 +91,7 @@
     text-align: center;
     animation: fadeInUp 0.8s ease;
     margin: 0;
-    color: var(--text-light);
+    color: #e5e7eb;
   }
 
   @keyframes fadeInUp {
@@ -100,107 +99,99 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  h2 {
-    margin: 0 0 14px;
-    font-size: 20px;
-    font-weight: 700;
-    color: #f1f5f9;
-  }
+  /* --- Unchanged Inner Card Elements --- */
+  h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; color: #f1f5f9; }
+  input { width: var(--w); padding: 12px; border-radius: 10px; border: 1px solid #334155; font-size: 15px; background: #0f172a; color: #f8fafc; outline: none; transition: all 0.25s ease; }
+  input:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+  .progress { width: var(--w); height: var(--bar-h); background: #1e293b; border-radius: 999px; margin: 14px auto; overflow: hidden; position: relative; }
+  .bar { height: 100%; width: 0%; border-radius: 999px; transition: width 350ms cubic-bezier(.2,.9,.3,1), background 250ms; }
+  .tag { display: inline-block; padding: 8px 14px; border-radius: 999px; font-weight: 600; background: rgba(59, 130, 246, 0.15); color: #93c5fd; margin-top: 10px; border: 1px solid rgba(59, 130, 246, 0.4); }
+  .suggestion-box { margin-top: 16px; min-height: 54px; padding: 14px; border-radius: 12px; border: 1px solid #ced4da; background: #e9ecef; text-align: left; font-size: 13px; color: #212529; }
+  .warning { margin-top: 14px; padding: 12px; border-radius: 10px; background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.4); display: none; font-weight: 600; }
+  .warning.show { display: block; animation: shake 600ms; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+  .small { font-size: 12px; color: #64748b; }
+  .center { display: flex; flex-direction: column; align-items: center; }
 
-  input {
-    width: var(--w);
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #334155;
-    font-size: 15px;
-    background: #0f172a;
-    color: #f8fafc;
-    outline: none;
-    transition: all 0.25s ease;
-  }
-
-  input:focus {
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-  }
-
-  .progress {
-    width: var(--w);
-    height: var(--bar-h);
-    background: #1e293b;
-    border-radius: 999px;
-    margin: 14px auto;
+  /* --- Dynamic Themes & Animations --- */
+  .animation-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     overflow: hidden;
-    position: relative;
+    z-index: 0;
+  }
+  
+  /* Morning Theme: 6AM - 12PM */
+  body.morning {
+    background: linear-gradient(to top, #ffecd2 0%, #fcb69f 100%);
+    color: #432818;
+  }
+  body.morning .moving-tagline p { color: #8c5a3b; }
+  .sun {
+    width: 150px; height: 150px;
+    background: #ffdd00;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -75px; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 50px #ffdd00;
+    animation: sunrise 5s 1s ease-out forwards;
+  }
+  @keyframes sunrise {
+    to { transform: translate(-50%, -100px); }
   }
 
-  .bar {
-    height: 100%;
-    width: 0%;
-    border-radius: 999px;
-    transition: width 350ms cubic-bezier(.2,.9,.3,1), background 250ms;
+  /* Evening Theme: 12PM - 6PM */
+  body.evening {
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #3d2a23;
+  }
+  body.evening .moving-tagline p { color: #5c4033; }
+  .cloud {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    opacity: 0;
+    animation: drift 20s linear infinite;
+  }
+  .cloud:before, .cloud:after {
+    content: ''; position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+  }
+  .cloud.c1 { width: 100px; height: 30px; top: 15%; left: -150px; }
+  .cloud.c2 { width: 150px; height: 45px; top: 25%; left: -200px; animation-duration: 25s; animation-delay: 5s; }
+  .cloud.c3 { width: 80px; height: 25px; top: 40%; left: -100px; animation-duration: 18s; animation-delay: 8s; }
+  @keyframes drift {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120vw); opacity: 1; }
   }
 
-  .tag {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 999px;
-    font-weight: 600;
-    background: rgba(59, 130, 246, 0.15);
-    color: #93c5fd;
-    margin-top: 10px;
-    border: 1px solid rgba(59, 130, 246, 0.4);
+  /* Night Theme: 6PM - 6AM */
+  body.night {
+    background: linear-gradient(to bottom, #00000c, #10102c, #2c2c54);
+    color: #e0e0e0;
   }
-
-  .suggestion-box {
-    margin-top: 16px;
-    min-height: 54px;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #ced4da;
-    background: #e9ecef;
-    text-align: left;
-    font-size: 13px;
-    color: var(--text-dark);
+  body.night .moving-tagline p { color: #a0a0c0; }
+  .star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite;
   }
-
-  .warning {
-    margin-top: 14px;
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(239,68,68,0.1);
-    color: #fca5a5;
-    border: 1px solid rgba(239,68,68,0.4);
-    display: none;
-    font-weight: 600;
-  }
-
-  .warning.show {
-    display: block;
-    animation: shake 600ms;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
-  }
-
-  .small {
-    font-size: 12px;
-    color: #64748b;
-  }
-
-  .center {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
   }
 </style>
 </head>
 <body>
 
+  <div class="animation-container" id="animation-container"></div>
+
   <header class="page-header">
+    <h2 id="dynamic-greeting"></h2>
     <div class="title">Password Entropy Analyzer</div>
     <div class="moving-tagline">
       <p>Hey, Just start typing your passwords before saving in other sites without cautious and know it safe and give everywhere and don’t fear , The worlds most dangerous weapon also requires strong password so cautious should be there for privacy and for everybody to your friends and familes 😇✨</p>
@@ -215,20 +206,18 @@
         <div class="progress"><div id="bar" class="bar"></div></div>
         <div id="strengthTag" class="tag">—</div>
       </div>
-
       <div id="warning" class="warning" role="alert"></div>
-
       <div class="suggestion-box">
         <strong>Suggestions:</strong>
         <div id="suggestionText" style="margin-top:6px">Start typing a password to see suggestions.</div>
       </div>
-
       <div class="small">Tip: Use at least 12 characters + symbols. Use a password manager.</div>
     </div>
   </main>
   
 <script>
-(async ()=> {
+// --- Core Password Logic (with fix) ---
+(()=> {
   const pwInput = document.getElementById('pw');
   const bar = document.getElementById('bar');
   const suggestionText = document.getElementById('suggestionText');
@@ -236,18 +225,15 @@
   const strengthTag = document.getElementById('strengthTag');
 
   function entropyEstimate(pw){
-    let lower = /[a-z]/.test(pw);
-    let upper = /[A-Z]/.test(pw);
-    let digit = /\d/.test(pw);
-    let special = /[!@#$%^&*(),.?":{}|<>;']/.test(pw);
+    let lower = /[a-z]/.test(pw); let upper = /[A-Z]/.test(pw);
+    let digit = /\d/.test(pw); let special = /[!@#$%^&*(),.?":{}|<>;']/.test(pw);
     let charset = (lower?26:0)+(upper?26:0)+(digit?10:0)+(special?32:0);
     if(!charset || pw.length===0) return 0;
     return Math.log2(Math.pow(charset, pw.length));
   }
 
   function simplePatterns(pw){
-    const patterns=[];
-    if(pw.length<8) patterns.push('short');
+    const patterns=[]; if(pw.length<8) patterns.push('short');
     if(/^\d+$/.test(pw)) patterns.push('all-digits');
     if(/(.)\1{3,}/.test(pw)) patterns.push('repeated-chars');
     if(/(qwert|asdf|zxcv|1q2w|qaz)/i.test(pw)) patterns.push('keyboard');
@@ -256,13 +242,11 @@
   }
 
   function makeShortSuggestion(){
-    const letters='abcdefghijklmnopqrstuvwxyz';
-    const syms='!@#$%^&*;?';
-    return letters[Math.floor(Math.random()*letters.length)]
-           + String(Math.floor(Math.random()*10))
-           + syms[Math.floor(Math.random()*syms.length)];
+    const letters='abcdefghijklmnopqrstuvwxyz'; const syms='!@#$%^&*;?';
+    return letters[Math.floor(Math.random()*letters.length)] + String(Math.floor(Math.random()*10)) + syms[Math.floor(Math.random()*syms.length)];
   }
 
+  // Added this function back
   function estimateTime(entropy){
     if(entropy<40) return 'months';
     if(entropy<60) return 'months to years';
@@ -270,25 +254,18 @@
   }
 
   pwInput.addEventListener('input', ()=>{
-    const val = pwInput.value || '';
-    const ent = entropyEstimate(val);
-    const pats = simplePatterns(val);
-    let score = 0;
-    if(val.length>=8) score += 20;
-    if(/[a-z]/.test(val)) score += 20;
-    if(/[A-Z]/.test(val)) score += 20;
-    if(/\d/.test(val)) score += 20;
+    const val = pwInput.value || ''; const ent = entropyEstimate(val);
+    const pats = simplePatterns(val); let score = 0;
+    if(val.length>=8) score += 20; if(/[a-z]/.test(val)) score += 20;
+    if(/[A-Z]/.test(val)) score += 20; if(/\d/.test(val)) score += 20;
     if(/[!@#$%^&*(),.?":{}|<>;']/.test(val)) score += 20;
     if(score<0) score=0; if(score>100) score=100;
     bar.style.width = score + '%';
     let color = '#ef4444';
-    if(score>=80) color='#22c55e';
-    else if(score>=60) color='#84cc16';
-    else if(score>=40) color='#f59e0b';
-    else color='#f97316';
+    if(score>=80) color='#22c55e'; else if(score>=60) color='#84cc16';
+    else if(score>=40) color='#f59e0b'; else color='#f97316';
     bar.style.background = color;
     strengthTag.textContent = score>=80 ? 'Strong' : score>=60 ? 'Moderate' : 'Weak';
-
     let suggestions = [];
     if(val.length>0){
       if(val.length < 12) suggestions.push('Consider using at least 12 characters.');
@@ -297,24 +274,55 @@
       if(!/\d/.test(val)) suggestions.push('Include numbers.');
       if(!/[!@#$%^&*(),.?":{}|<>;']/.test(val)) suggestions.push('Add special characters.');
       if(pats.length) suggestions.unshift('Weak pattern: ' + pats.join(', '));
-      if(ent < 50){
-        suggestions.push('Try adding: ' + makeShortSuggestion() + '  (suggestion)');
-      }
-    } else {
-      suggestions.push('Start typing a password to get suggestions.');
-    }
-    suggestionText.innerHTML = suggestions.map(s => '<div style="margin-bottom:6px">• ' + s + '</div>').join('');
-
+      if(ent < 50) suggestions.push('Try adding: ' + makeShortSuggestion() + ' (suggestion)');
+    } else { suggestions.push('Start typing a password to get suggestions.'); }
+    suggestionText.innerHTML = suggestions.map(s => `<div style="margin-bottom:6px">• ${s}</div>`).join('');
+    
+    // Restored the detailed warning message
     if(val.length>0 && ent < 45){
       const t = estimateTime(ent);
       warning.textContent = `Warning: Estimated risk high. Likely compromise in ~${t}.`;
       warning.classList.add('show');
-    } else {
-      warning.classList.remove('show');
-      warning.textContent = '';
-    }
+    } else { warning.classList.remove('show'); warning.textContent = ''; }
   });
 })();
+
+// --- New Dynamic Theme Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const greetingEl = document.getElementById('dynamic-greeting');
+    const animationContainer = document.getElementById('animation-container');
+    const hour = new Date().getHours();
+
+    const createStars = (count) => {
+        for (let i = 0; i < count; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 2;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            animationContainer.appendChild(star);
+        }
+    };
+    
+    if (hour >= 6 && hour < 12) {
+        body.className = 'morning';
+        greetingEl.textContent = 'Rise and Shine! Let\'s Secure Your Day.';
+        animationContainer.innerHTML = '<div class="sun"></div>';
+    } else if (hour >= 12 && hour < 18) {
+        body.className = 'evening';
+        greetingEl.textContent = 'Good Afternoon! Time for a Password Check-in.';
+        animationContainer.innerHTML = '<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>';
+    } else {
+        body.className = 'night';
+        greetingEl.textContent = 'Burning the Midnight Oil? Let\'s Keep Your Passwords Safe.';
+        createStars(100);
+    }
+});
 </script>
 </body>
 </html>
+
