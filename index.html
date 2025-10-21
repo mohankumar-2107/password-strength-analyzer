@@ -168,22 +168,51 @@
     to { transform: translateX(120vw); opacity: 1; }
   }
 
-  /* Night Theme: 6PM - 6AM */
+  /* --- Night Theme (Updated) --- */
   body.night {
-    background: linear-gradient(to bottom, #00000c, #10102c, #2c2c54);
+    background: linear-gradient(to bottom, #020106, #0f0f1b, #191932);
     color: #e0e0e0;
   }
   body.night .moving-tagline p { color: #a0a0c0; }
+  
   .star {
     position: absolute;
     background-color: white;
     border-radius: 50%;
-    animation: twinkle 2s infinite;
+    animation-name: glint;
+    animation-iteration-count: infinite;
   }
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+
+  /* New, more realistic glint animation */
+  @keyframes glint {
+    0%, 100% { opacity: 0.2; transform: scale(0.8); }
+    20% { opacity: 1; transform: scale(1.1); }
+    40% { opacity: 0.3; transform: scale(0.9); }
+    60% { opacity: 0.8; transform: scale(1); }
+    80% { opacity: 0.1; transform: scale(0.7); }
   }
+
+  .shooting-star {
+    position: absolute;
+    height: 2px;
+    width: 100px;
+    background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(255,255,255,0));
+    border-radius: 999px;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.7));
+    animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
+  }
+
+  @keyframes tail {
+    0% { width: 0; }
+    30% { width: 100px; }
+    100% { width: 0; }
+  }
+  
+  @keyframes shooting {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(400px) translateY(400px); }
+  }
+
 </style>
 </head>
 <body>
@@ -194,7 +223,8 @@
     <h2 id="dynamic-greeting"></h2>
     <div class="title">Password Entropy Analyzer</div>
     <div class="moving-tagline">
-      <p>Hey, Just start typing your passwords before saving in other sites without cautious and know it safe and give everywhere and don’t fear , The worlds most dangerous weapon also requires strong password so cautious should be there for privacy and for everybody to your friends and familes 😇✨</p>
+      <p>Hey, Just start typing your passwords before saving in other sites without cautious and know it safe and give everywhere and don’t fear , The worlds most dangerous weapon also requires strong password so cautious should be there for privacy and for everybody to your friends and familes 😇✨
+</p>
     </div>
   </header>
   
@@ -287,24 +317,38 @@
   });
 })();
 
-// --- New Dynamic Theme Logic ---
+// --- New Dynamic Theme Logic (Updated) ---
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const greetingEl = document.getElementById('dynamic-greeting');
     const animationContainer = document.getElementById('animation-container');
     const hour = new Date().getHours();
 
-    const createStars = (count) => {
-        for (let i = 0; i < count; i++) {
+    const createNightSky = () => {
+        // Create twinkling stars
+        for (let i = 0; i < 150; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 2;
+            const size = Math.random() * 2.5;
             star.style.width = `${size}px`;
             star.style.height = `${size}px`;
             star.style.top = `${Math.random() * 100}%`;
             star.style.left = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 2}s`;
+            // Randomize animation duration and delay for a natural effect
+            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
             animationContainer.appendChild(star);
+        }
+
+        // Create a few shooting stars
+        for (let i = 0; i < 3; i++) {
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            shootingStar.style.top = `${Math.random() * 60}%`; // Start higher up
+            shootingStar.style.left = `${Math.random() * 60}%`;
+            shootingStar.style.animationDelay = `${Math.random() * 5 + 2}s`;
+            shootingStar.style.animationDuration = `${Math.random() * 2 + 3}s`;
+            animationContainer.appendChild(shootingStar);
         }
     };
     
@@ -319,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         body.className = 'night';
         greetingEl.textContent = 'Burning the Midnight Oil? Let\'s Keep Your Passwords Safe.';
-        createStars(100);
+        createNightSky();
     }
 });
 </script>
