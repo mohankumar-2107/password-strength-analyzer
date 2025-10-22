@@ -80,7 +80,14 @@ Integrate with sign-up systems for real-time feedback
 Use in security hackathons or portfolio projects
 
 Demonstrate regex and entropy logic in placement resumes
+## 🌙 Latest Update — Night Mode Enhancements
 
+The newest changes focus on making the **Night Mode (6 PM – 6 AM)** more realistic and visually beautiful:
+
+- **Realistic Twinkling:** Stars now “glint” naturally with changing brightness and subtle size shifts.
+- **Natural Starfield:** Each star has random twinkle timing, creating a truly dynamic night sky.
+- **Shooting Stars:** Occasionally, a shooting star streaks across the screen — adding life to the night.
+- **Deeper Sky Gradient:** The night background now has a deeper, immersive space-blue tone for a premium look.
 🧩 Future Enhancements
 
 🌐 Add Flask or Streamlit web UI
@@ -101,5 +108,6 @@ Mohan Kumar G B
 💼 GitHub: @mohankumar-2107
 
 📧 Email: mohankumargb666@gmail.com
+
 
 🚀 Passionate about building secure, smart, and simple applications.
