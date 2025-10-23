@@ -41,7 +41,7 @@
 
   .title {
     font-size: 36px;
-    font-weight: 700; /* Fixed the typo (removed the space) */
+    font-weight: 700; 
     text-shadow: none;
     text-align: center;
     margin: 0;
@@ -170,14 +170,14 @@
 
   /* --- Night Theme (Upgraded Parallax Starfield) --- */
   body.night {
-    /* Adjusted gradient for a solid black top */
+    /* Adjusted gradient: Black top, transitioning to blue/purple which holds to the bottom */
     background: linear-gradient(to bottom, 
       #000000 0%,  /* Start black */
       #000000 15%, /* Hold black for top 15% */
       #020106 30%, /* Transition to dark blue */
-      #0f0f1b 60%, /* Main blue/purple tone */
-      #191932 85%, /* Lighter purple towards bottom */
-      #000000 100% /* End black */
+      #0f0f1b 50%, /* Main blue/purple tone */
+      #191932 80%, /* Hold lighter purple */
+      #191932 100% /* Ensure bottom is the purple shade */
     );
     color: #e0e0e0;
   }
@@ -238,13 +238,13 @@
     border-radius: 999px;
     filter: drop-shadow(0 0 6px rgba(255,255,255,0.7)); /* Restored glow */
     opacity: 0;
-    /* Use a new, faster animation */
+    /* Use animation with adjusted speed */
     animation: shooting-star-anim var(--shoot-duration) ease-in infinite;
     animation-delay: var(--shoot-delay);
     transform: translateX(var(--start-x)) translateY(var(--start-y));
   }
 
-  /* New animation for a fast, realistic streak */
+  /* Animation for a slightly slower, visible streak */
   @keyframes shooting-star-anim {
     0% {
       width: 0;
