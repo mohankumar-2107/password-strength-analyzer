@@ -41,7 +41,7 @@
 
   .title {
     font-size: 36px;
-    font-weight: 700;
+    font-weight: 700; /* Fixed the typo (removed the space) */
     text-shadow: none;
     text-align: center;
     margin: 0;
@@ -168,13 +168,30 @@
     to { transform: translateX(120vw); opacity: 1; }
   }
 
-  /* --- Night Theme (Updated) --- */
+  /* --- Night Theme (Upgraded Parallax Starfield) --- */
   body.night {
-    background: linear-gradient(to bottom, #020106, #0f0f1b, #191932);
+    /* Adjusted gradient for a solid black top */
+    background: linear-gradient(to bottom, 
+      #000000 0%,  /* Start black */
+      #000000 15%, /* Hold black for top 15% */
+      #020106 30%, /* Transition to dark blue */
+      #0f0f1b 60%, /* Main blue/purple tone */
+      #191932 85%, /* Lighter purple towards bottom */
+      #000000 100% /* End black */
+    );
     color: #e0e0e0;
   }
   body.night .moving-tagline p { color: #a0a0c0; }
   
+  .star-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%; /* Wider to allow for drift */
+    height: 100%;
+    animation: star-drift var(--drift-duration) linear infinite;
+  }
+
   .star {
     position: absolute;
     background-color: white;
@@ -182,8 +199,13 @@
     animation-name: glint;
     animation-iteration-count: infinite;
   }
+  
+  /* More pronounced drift */
+  @keyframes star-drift {
+    from { transform: translateX(-50%); } /* Start offset */
+    to { transform: translateX(0); } /* End at original position */
+  }
 
-  /* New, more realistic glint animation */
   @keyframes glint {
     0%, 100% { opacity: 0.2; transform: scale(0.8); }
     20% { opacity: 1; transform: scale(1.1); }
@@ -192,25 +214,86 @@
     80% { opacity: 0.1; transform: scale(0.7); }
   }
 
-  .shooting-star {
+  /* Faint Nebula/Gas Clouds (Made more visible) */
+  .nebula {
     position: absolute;
-    height: 2px;
-    width: 100px;
-    background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(255,255,255,0));
-    border-radius: 999px;
-    filter: drop-shadow(0 0 6px rgba(255,255,255,0.7));
-    animation: tail 3s ease-in-out infinite, shooting 3s ease-in-out infinite;
+    background: radial-gradient(circle at center, rgba(40, 40, 90, 0.3) 0%, rgba(20, 20, 50, 0.15) 50%, rgba(0,0,10,0) 100%);
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.8; /* More visible */
+    animation: nebula-drift 60s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: -1;
   }
 
-  @keyframes tail {
-    0% { width: 0; }
-    30% { width: 100px; }
-    100% { width: 0; }
+  @keyframes nebula-drift {
+    from { transform: translateX(-20%) translateY(-20%) scale(1); }
+    to { transform: translateX(20%) translateY(20%) scale(1.1); }
   }
-  
-  @keyframes shooting {
-    0% { transform: translateX(0) translateY(0); }
-    100% { transform: translateX(400px) translateY(400px); }
+
+  .shooting-star {
+    position: absolute;
+    height: 2px; /* Made thicker again */
+    background: linear-gradient(-45deg, rgba(255,255,255,1), rgba(255,255,255,0)); /* Brighter gradient */
+    border-radius: 999px;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.7)); /* Restored glow */
+    opacity: 0;
+    /* Use a new, faster animation */
+    animation: shooting-star-anim var(--shoot-duration) ease-in infinite;
+    animation-delay: var(--shoot-delay);
+    transform: translateX(var(--start-x)) translateY(var(--start-y));
+  }
+
+  /* New animation for a fast, realistic streak */
+  @keyframes shooting-star-anim {
+    0% {
+      width: 0;
+      opacity: 0;
+      transform: translateX(var(--start-x)) translateY(var(--start-y));
+    }
+    10% {
+      width: 150px; /* Max tail length */
+      opacity: 1;
+    }
+    80% {
+      width: 150px;
+      opacity: 0;
+    }
+    100% {
+      width: 0;
+      opacity: 0;
+      /* Move to the end position */
+      transform: translateX(calc(var(--start-x) + var(--end-x))) translateY(calc(var(--start-y) + var(--end-y)));
+    }
+  }
+
+  /* New: Slow Falling Star */
+  .falling-star {
+    position: absolute;
+    background-color: #fff; /* White */
+    border-radius: 50%;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+    opacity: 0;
+    animation: falling-star-anim var(--fall-duration) linear infinite;
+    animation-delay: var(--fall-delay);
+    z-index: 0; /* Behind foreground parallax stars but above background */
+  }
+
+  @keyframes falling-star-anim {
+    0% {
+      opacity: 0;
+      transform: translateX(var(--fall-start-x)) translateY(var(--fall-start-y)) scale(1);
+    }
+    10% {
+      opacity: 0.7;
+    }
+    90% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(calc(var(--fall-start-x) + var(--fall-end-x))) translateY(calc(var(--fall-start-y) + var(--fall-end-y))) scale(1.2);
+    }
   }
 
 </style>
@@ -276,7 +359,6 @@
     return letters[Math.floor(Math.random()*letters.length)] + String(Math.floor(Math.random()*10)) + syms[Math.floor(Math.random()*syms.length)];
   }
 
-  // Added this function back
   function estimateTime(entropy){
     if(entropy<40) return 'months';
     if(entropy<60) return 'months to years';
@@ -308,7 +390,6 @@
     } else { suggestions.push('Start typing a password to get suggestions.'); }
     suggestionText.innerHTML = suggestions.map(s => `<div style="margin-bottom:6px">• ${s}</div>`).join('');
     
-    // Restored the detailed warning message
     if(val.length>0 && ent < 45){
       const t = estimateTime(ent);
       warning.textContent = `Warning: Estimated risk high. Likely compromise in ~${t}.`;
@@ -317,46 +398,131 @@
   });
 })();
 
-// --- New Dynamic Theme Logic (Updated) ---
+// --- New Dynamic Theme Logic (Upgraded Night Sky) ---
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const greetingEl = document.getElementById('dynamic-greeting');
     const animationContainer = document.getElementById('animation-container');
     const hour = new Date().getHours();
 
-    const createNightSky = () => {
-        // Create twinkling stars
-        for (let i = 0; i < 150; i++) {
+    const createStarLayer = (count, size, animationDuration, opacity, zIndex, driftDuration) => {
+        const layer = document.createElement('div');
+        layer.className = 'star-layer';
+        layer.style.zIndex = zIndex;
+        layer.style.setProperty('--drift-duration', `${driftDuration}s`);
+        
+        for (let i = 0; i < count; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 2.5;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
+            const starSize = Math.random() * size + (size / 3);
+            star.style.width = `${starSize}px`;
+            star.style.height = `${starSize}px`;
             star.style.top = `${Math.random() * 100}%`;
-            star.style.left = `${Math.random() * 100}%`;
-            // Randomize animation duration and delay for a natural effect
-            star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            // Spread stars across the 200% width
+            star.style.left = `${Math.random() * 200}%`; 
+            star.style.opacity = Math.random() * 0.5 + opacity; // Random base opacity
+            star.style.animationDuration = `${Math.random() * 2 + animationDuration}s`;
             star.style.animationDelay = `${Math.random() * 3}s`;
-            animationContainer.appendChild(star);
+            layer.appendChild(star);
         }
+        animationContainer.appendChild(layer);
+    };
 
-        // Create a few shooting stars
-        for (let i = 0; i < 3; i++) {
-            const shootingStar = document.createElement('div');
-            shootingStar.className = 'shooting-star';
-            shootingStar.style.top = `${Math.random() * 60}%`; // Start higher up
-            shootingStar.style.left = `${Math.random() * 60}%`;
-            shootingStar.style.animationDelay = `${Math.random() * 5 + 2}s`;
-            shootingStar.style.animationDuration = `${Math.random() * 2 + 3}s`;
-            animationContainer.appendChild(shootingStar);
+    const createFallingStars = (count) => {
+        for (let i = 0; i < count; i++) {
+            const fallingStar = document.createElement('div');
+            fallingStar.className = 'falling-star';
+            const size = Math.random() * 3 + 2; // 2px to 5px
+            fallingStar.style.width = `${size}px`;
+            fallingStar.style.height = `${size}px`;
+
+            // Start off-screen top-left
+            const startX = Math.random() * 30 - 20; // From -20vw to 10vw
+            const startY = Math.random() * 30 - 20; // From -20vh to 10vh
+
+            // Fall direction: down and right
+            const fallDistanceX = Math.random() * 80 + 50; // 50vw to 130vw
+            const fallDistanceY = Math.random() * 80 + 50; // 50vh to 130vh
+
+            fallingStar.style.setProperty('--fall-start-x', `${startX}vw`);
+            fallingStar.style.setProperty('--fall-start-y', `${startY}vh`);
+            fallingStar.style.setProperty('--fall-end-x', `${fallDistanceX}vw`);
+            fallingStar.style.setProperty('--fall-end-y', `${fallDistanceY}vh`);
+            
+            fallingStar.style.setProperty('--fall-duration', `${Math.random() * 20 + 30}s`); // 30s to 50s
+            fallingStar.style.setProperty('--fall-delay', `${Math.random() * 20}s`); // 0s to 20s delay
+
+            animationContainer.appendChild(fallingStar);
         }
     };
+
+    const createNightSky = () => {
+        // 1. Create faint nebula clouds for depth (More visible)
+        const nebulaCount = 5;
+        for (let i = 0; i < nebulaCount; i++) {
+            const nebula = document.createElement('div');
+            nebula.className = 'nebula';
+            nebula.style.width = `${Math.random() * 400 + 300}px`;
+            nebula.style.height = `${Math.random() * 400 + 300}px`;
+            nebula.style.top = `${Math.random() * 100 - 20}%`;
+            nebula.style.left = `${Math.random() * 100 - 20}%`;
+            nebula.style.animationDuration = `${Math.random() * 40 + 60}s`;
+            nebula.style.animationDelay = `${Math.random() * 10}s`;
+            animationContainer.appendChild(nebula);
+        }
+
+        // 2. Create Parallax Star Layers (More obvious differences)
+        // z-index: -2 (Deep Background)
+        createStarLayer(150, 1.5, 6, 0.4, -2, 120); // 120s drift
+        // z-index: -1 (Midground)
+        createStarLayer(80, 2.5, 5, 0.6, -1, 80); // 80s drift
+        // z-index: 1 (Foreground)
+        createStarLayer(30, 3.5, 4, 0.9, 1, 40); // 40s drift
+
+        // 3. Create shooting stars 
+        for (let i = 0; i < 2; i++) { 
+            const shootingStar = document.createElement('div');
+            shootingStar.className = 'shooting-star';
+            
+            let startX;
+            if (i === 0) {
+                // First star: Start from the left side
+                startX = Math.random() * 50 - 20; // -20vw to 30vw
+            } else {
+                // Second star: Start from the middle/right side
+                startX = Math.random() * 40 + 40; // 40vw to 80vw
+            }
+            
+            // Start higher up (0% to 20% from top)
+            const startY = Math.random() * 20; 
+            
+            // Make them travel further AND only to the right
+            const endX = (Math.random() * 500 + 300);
+            const endY = Math.random() * 300 + 200; 
+
+            shootingStar.style.setProperty('--start-x', `${startX}vw`);
+            shootingStar.style.setProperty('--start-y', `${startY}vh`);
+            shootingStar.style.setProperty('--end-x', `${endX}px`);
+            shootingStar.style.setProperty('--end-y', `${endY}px`);
+            shootingStar.style.setProperty('--shoot-duration', `${Math.random() * 1.5 + 2}s`); // 2s to 3.5s
+            shootingStar.style.setProperty('--shoot-delay', `${Math.random() * 10 + 2}s`); // 2s to 12s delay
+            
+            animationContainer.appendChild(shootingStar);
+        }
+
+        // 4. Create subtle falling stars
+        createFallingStars(5); // 5 falling stars
+    };
     
-    if (hour >= 6 && hour < 12) {
+    // Determine theme based on hour (example: 19 = 7 PM)
+    const currentHour = new Date().getHours(); 
+    // const currentHour = 7; // Uncomment and set hour to test themes (6-11 morning, 12-17 evening, 18-5 night)
+
+    if (currentHour >= 6 && currentHour < 12) {
         body.className = 'morning';
         greetingEl.textContent = 'Rise and Shine! Let\'s Secure Your Day.';
         animationContainer.innerHTML = '<div class="sun"></div>';
-    } else if (hour >= 12 && hour < 18) {
+    } else if (currentHour >= 12 && currentHour < 18) {
         body.className = 'evening';
         greetingEl.textContent = 'Good Afternoon! Time for a Password Check-in.';
         animationContainer.innerHTML = '<div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>';
